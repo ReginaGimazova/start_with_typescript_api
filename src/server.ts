@@ -8,6 +8,11 @@ const app = express();
 const server = new ApolloServer({
   schema,
   playground: true,
+  subscriptions: {
+    onConnect: async (connectionParams, webSocket) => {
+      console.log(connectionParams, 'connection params');
+    },
+  },
 });
 
 server.applyMiddleware({app, path: '/graphql'});

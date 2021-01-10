@@ -5,19 +5,19 @@ import resolvers from "./resolvers";
 
 const typeDefs = gql`
   type Query {
-      cards: [Card!]
+    cards: [Card!]
   }
   type Mutation {
-      createCard(text: String!): Card
-      removeCard(id: ID!): Card
+    createCard(text: String!): Card!
+    removeCard(id: ID!): Card!
   }
   type Subscription {
-      cardAdded: Card
-      cardRemoved: Card
+    cardAdded: Card!
+    cardRemoved: Card!
   }
   type Card {
-      id: ID!
-      text: String!
+    id: ID!
+    text: String!
   }
 `;
 

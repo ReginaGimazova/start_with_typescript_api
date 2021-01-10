@@ -5,10 +5,8 @@ import CardController from "../Card/CardController";
 const cardController = new CardController();
 const pubSub = new PubSub();
 
-const SUBSCRIPTION_ACTIONS = {
-  CARD_ADDED: 'CARD_ADDED',
-  CARD_REMOVED: 'CARD_REMOVED'
-};
+const CARD_ADDED = 'CARD_ADDED';
+const CARD_REMOVED = 'CARD_REMOVED'
 
 const resolvers: IResolvers = {
   Query: {
@@ -16,27 +14,30 @@ const resolvers: IResolvers = {
   },
   Mutation: {
     createCard: async (parent, args) => {
-      await pubSub.publish(SUBSCRIPTION_ACTIONS.CARD_ADDED, {
-        cardAdded: {...args}
-      })
-      await cardController.saveCard(args)
+      const createdCard = await cardController.saveCard(args);
+      await pubSub.publish(CARD_ADDED, {
+        cardAdded: createdCard
+      });
+      return createdCard;
     },
     removeCard: async (parent, args) => {
-      await pubSub.publish(SUBSCRIPTION_ACTIONS.CARD_REMOVED, {
-        cardRemoved: {...args}
+      const removedCard = await cardController.removeCard(args);
+
+      await pubSub.publish(CARD_REMOVED, {
+        cardRemoved: removedCard
       })
-      await cardController.removeCard(args)
+      return removedCard
     }
   },
   Subscription: {
     cardAdded: {
       subscribe: () => {
-        return pubSub.asyncIterator([SUBSCRIPTION_ACTIONS.CARD_ADDED])
+        return pubSub.asyncIterator([CARD_ADDED])
       }
     },
     cardRemoved: {
       subscribe: () => {
-        return pubSub.asyncIterator([SUBSCRIPTION_ACTIONS.CARD_REMOVED])
+        return pubSub.asyncIterator([CARD_REMOVED])
       }
     }
   }
